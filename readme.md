@@ -4,7 +4,7 @@
 
 This is a C driver program for operating a Bosch BME280 humidity, pressure and temperature sensor via I2C on a Raspberry Pi. I used it with an AE-BME280 module, and an unbranded module. On the AE-BME280, the J3 solder pad needs to be bridged for enabling I2C mode. If J1 and J2 are closed, it enables the optional onboard 4.7KOhm pull-up resistors. On a standard Pi, the I2C bus already has 1k8 pull-ups to 3V3. On other boards such as the Neo-Pi2 require explicit I2C bus pull-ups.
 
-<img src="aki-bme280.png" height="320px" width="240px">
+<img src="aki-bme280.png" height="240px" width="320px">
 
 ## I2C bus connection
 
