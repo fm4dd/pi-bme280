@@ -86,7 +86,7 @@ pi@rpi0w:~/pi-bme280 $ ./getbme280 -a 0x77 -t
 
 Program usage:
 ```
-Usage: getbme280 [-a hex i2c-addr] [-b i2c-bus] [-d] [-i] [-m osrs_mode] [-p pwrmode] [-t] [-c] [-r] [-o htmlfile] [-v]
+Usage: getbme280 [-a i2c-addr] [-b i2c-bus] [-d] [-i] [-m osrs_mode] [-p pwrmode] [-t] [-c] [-r] [-o file] [-v]
 
 Command line parameters have the following format:
    -a   sensor I2C bus address in hex, Example: -a 0x76 (default)

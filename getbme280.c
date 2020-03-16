@@ -437,6 +437,11 @@ int main(int argc, char *argv[]) {
       struct bmedata bmed;
       get_calib(&bmec);
 
+      /* -------------------------------------------------------- *
+       * If power mode != NORMAL, set NORMAL for continuous reads *
+       * -------------------------------------------------------- */
+      if(get_power() != 0x3) res = set_power(normal);
+
       while(1){
          time_t tsnow = time(NULL);
          get_data(&bmec, &bmed);
