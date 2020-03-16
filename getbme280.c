@@ -33,6 +33,7 @@ int argflag = 0; // 1=dump, 2=info, 3=reset, 4=data, 5=continuous
 char osrs_mode[7] = {0};  // oversampling mode
 char pwr_mode[7]  = {0};  // power mode
 char iir_mode[4]  = {0};  // IIR filter mode
+char stby_time[5] = {0};  // standby time
 char senaddr[256] = BME280_ADDR;
 char i2c_bus[256] = I2CBUS;
 char htmfile[256] = {0};
@@ -65,6 +66,8 @@ Command line parameters have the following format:\n\
           forced  = take a single measurement and return to sleep\n\
           sleep   = no measurements (default after power-up)\n\
    -r   reset sensor\n\
+   -s   set sensor standby time for power mode normal. arguments: <ms>\n\
+          valid ms settings: 0.5, 10, 20, 62.5, 125, 250, 500, 1000\n\
    -t   read and output single measurement (power mode forced)\n\
    -c   read and output continuous measurements (power mode normal, 1sec interval)\n\
    -o   output data to HTML table file (requires -t/-c), example: -o ./bme280.html\n\
@@ -89,7 +92,7 @@ void parseargs(int argc, char* argv[]) {
 
    if(argc == 1) { usage(); exit(-1); }
 
-   while ((arg = (int) getopt (argc, argv, "a:b:cdf:im:p:rto:hv")) != -1) {
+   while ((arg = (int) getopt (argc, argv, "a:b:cdf:im:p:rs:to:hv")) != -1) {
       switch (arg) {
          // arg -v verbose, type: flag, optional
          case 'v':
@@ -176,13 +179,23 @@ void parseargs(int argc, char* argv[]) {
             argflag = 3;
             break;
 
+         // arg -s sets standby time, type: string
+         case 's':
+            if(verbose == 1) printf("Debug: arg -s, value %s\n", optarg);
+            if (strlen(optarg) >= sizeof(stby_time)) {
+               printf("Error: standby time argument to long.\n");
+               exit(-1);
+            }
+            strncpy(stby_time, optarg, sizeof(stby_time));
+            break;
+
          // arg -t reads the sensor data
          case 't':
             if(verbose == 1) printf("Debug: arg -t\n");
             argflag = 4;
             break;
 
-         // arg -c reads sensoer data continuously
+         // arg -c reads sensor data continuously
          case 'c':
             if(verbose == 1) printf("Debug: arg -c\n");
             argflag = 5;
@@ -353,9 +366,21 @@ int main(int argc, char *argv[]) {
          exit(-1);
       }
 
-     res = set_power(newmode);
+      res = set_power(newmode);
       if(res != 0) {
-        printf("Error: could not set power mode %s [0x%02X].\n", pwr_mode, newmode);
+         printf("Error: could not set power mode %s [0x%02X].\n", pwr_mode, newmode);
+         exit(-1);
+      }
+      exit(0);
+   }
+   /* ----------------------------------------------------------- *
+    *  "-s" set the sensor standby time and exit the program      *
+    * ----------------------------------------------------------- */
+   if(strlen(stby_time) > 0) {
+      res = set_stby(stby_time);
+
+      if(res != 0) {
+         printf("Error: could not set standby time %s.\n", stby_time);
          exit(-1);
       }
       exit(0);
@@ -366,6 +391,12 @@ int main(int argc, char *argv[]) {
    if(argflag == 4) {
       struct bmecal bmec;
       struct bmedata bmed;
+
+      /* -------------------------------------------------------- *
+       * If power mode SLEEP, set power mode FORCED to read once  *
+       * -------------------------------------------------------- */
+      if(get_power() == 0x0) res = set_power(forced);
+
       get_calib(&bmec);
       get_data(&bmec, &bmed);
 

@@ -244,7 +244,7 @@ char get_power() {
       return(-1);
    }
 
-   if(verbose == 1) printf("Debug:     Power Mode: [0x%02X] 2bit [0x%02X]\n", buf, buf & 0x03);
+   if(verbose == 1) printf("Debug: Get power mode: [0x%02X] register [0x%02X]\n", buf & 0x03, buf);
    return(buf & 0x03);  // only return the lowest 2 bits
 }
 
@@ -606,6 +606,78 @@ char get_stby() {
    if(verbose == 1) printf("Debug:   Standby Time: [0x%02X] 3bit [0x%02X]\n", buf, (buf >>5) & 0x07);
    return((buf >>5) & 0x07);  // only return bit 5-7
 }
+
+/* --------------------------------------------------------------- *
+ * set_stby() sets the standby time in register 0xF5.              *
+ * This register is multi-purpose, requires to set individual bits *
+ * --------------------------------------------------------------- */
+int set_stby(char *mode) {
+   char reg = BME280_CONFIG_ADDR;
+   char regdata = 0;
+   if(write(i2cfd, &reg, 1) != 1) {
+      printf("Error: I2C write failure for register 0x%02X\n", reg);
+   }
+
+   if(read(i2cfd, &regdata, 1) != 1) {
+      printf("Error: I2C read failure for register 0x%02X\n", reg);
+   }
+
+   if(strcmp(mode, "0.5")    == 0) {
+      regdata &= ~(1 << 5); // bit-5
+      regdata &= ~(1 << 6); // bit-6
+      regdata &= ~(1 << 7); // bit-7
+   }
+   else if(strcmp(mode, "62.5")  == 0) {
+      regdata |= 1 << 5;    // bit-5
+      regdata &= ~(1 << 6); // bit-6
+      regdata &= ~(1 << 7); // bit-7
+   }
+   else if(strcmp(mode, "125")  == 0) {
+      regdata &= ~(1 << 5); // bit-5
+      regdata |= 1 << 6;    // bit-6
+      regdata &= ~(1 << 7); // bit-7
+   }
+   else if(strcmp(mode, "250")  == 0) {
+      regdata |= 1 << 5;    // bit-5
+      regdata |= 1 << 6;    // bit-6
+      regdata &= ~(1 << 7); // bit-7
+   }
+   else if(strcmp(mode, "500")  == 0) {
+      regdata &= ~(1 << 5); // bit-5
+      regdata &= ~(1 << 6); // bit-6
+      regdata |= 1 << 7;    // bit-7
+   }
+   else if(strcmp(mode, "1000")  == 0) {
+      regdata |= 1 << 5;    // bit-5
+      regdata &= ~(1 << 6); // bit-6
+      regdata |= 1 << 7;    // bit-7
+   }
+   else if(strcmp(mode, "10")  == 0) {
+      regdata &= ~(1 << 5); // bit-5
+      regdata |= 1 << 6;    // bit-6
+      regdata |= 1 << 7;    // bit-7
+   }
+   else if(strcmp(mode, "20")  == 0) {
+      regdata |= 1 << 5;    // bit-5
+      regdata |= 1 << 6;    // bit-6
+      regdata |= 1 << 7;    // bit-7
+   }
+   else {
+      printf("Error: Unknown standby time value %s\n", mode);
+      return(-1);
+   }
+
+   char buf[2] = {0};
+   buf[0] = reg;
+   buf[1] = regdata;
+   if(verbose == 1) printf("Debug: Write stbytime: [0x%02X] to register [0x%02X]\n", buf[1], buf[0]);
+   if(write(i2cfd, buf, 2) != 2) {
+      printf("Error: I2C write failure for register 0x%02X\n", buf[0]);
+      return(-1);
+   }
+   return(0);
+}
+
 
 /* ------------------------------------------------------------ *
  * print_osrs() print the oversampling setting for the numeric  *

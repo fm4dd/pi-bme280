@@ -2,7 +2,7 @@
 
 ## Background
 
-This is a C driver program for operating a Bosch BME280 humidity, pressure and temperature sensor via I2C on a Raspberry Pi. I used it with an AE-BME280 module, and an unbranded module. On the AE-BME280, the J3 solder pad needs to be bridged for enabling I2C mode. If J1 and J2 are closed, it enables the optional onboard 4.7KOhm pull-up resistors. On a standard Pi, the I2C bus already has 1k8 pull-ups to 3V3. On other boards such as the Neo-Pi2 require explicit I2C bus pull-ups.
+This is a C driver program for operating a Bosch BME280 humidity, pressure and temperature sensor via I2C on a Raspberry Pi. I used it with an AE-BME280 module, and an unbranded module. On the AE-BME280, the J3 solder pad needs to be bridged for enabling I2C mode. If J1 and J2 are closed, it enables the optional onboard 4.7KOhm pull-up resistors. On a standard Pi, the I2C bus already has 1k8 pull-ups to 3V3. Other boards such as the Neo-Pi2 require explicit pull-ups.
 
 <img src="aki-bme280.png" height="240px" width="320px">
 
@@ -41,7 +41,7 @@ cc i2c_bme280.o getbme280.o -o getbme280 -lm
 
 ## Example output
 
-Running the program, extracting the sensor version and configuration information:
+Extracting the sensor version and configuration information with "-i":
 ```
 pi@rpi0w:~/pi-bme280 $ ./getbme280 -a 0x77 -i
 ----------------------------------------------
@@ -61,6 +61,25 @@ BME280 Information at Sun Mar 15 21:05:45 2020
                      P7:  9900 P8:-10230 P9: 4285
     Humidity Coeff = H1:    75 H2:   367 H3:    0
                      H4:   308 H5:    50 H6:   30
+```
+
+Enabling barometric pressure measurements with "-m p-1" in verbose mode:
+
+```
+pi@rpi0w:~/pi-bme280 $ ./getbme280 -a 0x77 -m p-1 -v
+Debug: ts=[1584379410] date=Mon Mar 16 17:23:30 2020
+Debug: I2C bus device: [/dev/i2c-1]
+Debug: Sensor address: [0x77]
+Debug: Got data @addr: [0x77]
+Debug: Measuring type: [p]
+Debug: Set osrs value: [1]
+Debug: Write osrsmode: [0xC4] to register [0xF4]
+```
+
+Taking a single measurement, using the "-t" argument
+```
+pi@rpi0w:~/pi-bme280 $ ./getbme280 -a 0x77 -t
+1584379440 Temp=23.23*C Humidity=36.04% Pressure=1005.91hPa
 ```
 
 ## Usage

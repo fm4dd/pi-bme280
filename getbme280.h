@@ -172,6 +172,7 @@ extern int set_p_osrs(char*);             // set pressure oversampling
 extern char get_t_osrs();                 // get temperat. oversampling
 extern int set_t_osrs(char*);             // set temperat. oversampling
 extern char get_stby();                   // get the sensor standby time
+extern int set_stby(char*);               // set the sensor standby time
 extern void print_stby(char);             // prints the sensor standby time
 extern char get_filter();                 // get the IIR filter setting
 extern int set_filter(char*);             // set the sensor IIR filter mode
@@ -180,4 +181,5 @@ extern char get_spi3we();                 // get the SPI 3-Wire setting
 extern void print_spi3we(char);           // prints the SPI 3-Wire setting
 extern void get_calib();                  // get the sensor calibration data
 extern void print_calib(struct bmecal*);  // prints the calibration data 
-extern void get_data(struct bmecal*, struct bmedata*); // get temp, humidity, pressure data
+extern void get_data(struct bmecal*,      // get temp, humidity, and
+                      struct bmedata*);   // pressure data
