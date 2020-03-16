@@ -391,13 +391,15 @@ int main(int argc, char *argv[]) {
    if(argflag == 4) {
       struct bmecal bmec;
       struct bmedata bmed;
+      get_calib(&bmec);
 
       /* -------------------------------------------------------- *
-       * If power mode SLEEP, set power mode FORCED to read once  *
+       * If power mode SLEEP, set power mode FORCED to read once, *
+       * and then wait 15-120ms for the measurement to complete.  *
        * -------------------------------------------------------- */
       if(get_power() == 0x0) res = set_power(forced);
+      usleep(120 * 1000); // set max 120ms, needed for 16x osrs
 
-      get_calib(&bmec);
       get_data(&bmec, &bmed);
 
       /* ----------------------------------------------------------- *
