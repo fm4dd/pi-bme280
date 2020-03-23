@@ -1,4 +1,4 @@
-C=gcc
+CC=gcc
 CFLAGS= -O3 -Wall -g
 LIBS= -lm
 AR=ar
