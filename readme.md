@@ -1,7 +1,5 @@
 # Pi-BME280
 
-![test](https://github.com/fm4dd/pi-bme280/workflows/test/badge.svg)
-
 ## Background
 
 This is a C driver program for operating a Bosch BME280 humidity, pressure and temperature sensor via I2C on a Raspberry Pi. I used it with an AE-BME280 module, and an unbranded module. On the AE-BME280, the J3 solder pad needs to be bridged for enabling I2C mode. If J1 and J2 are closed, it enables the optional onboard 4.7KOhm pull-up resistors. On a standard Pi, the I2C bus already has 1k8 pull-ups to 3V3. Other boards such as the Neo-Pi2 require explicit pull-ups.
@@ -142,3 +140,8 @@ BME280 register dump:
 [0xE0] 00 6F 01 00 13 24 03 1E 37 41 FF FF FF FF FF FF
 [0xF0] FF 00 04 0C C3 08 00 80 00 00 7F FE F0 63 DF
 ```
+
+#### PMOD-BME280
+
+This code has been tested successfully with the [PMOD-MBE280](https://github.com/fm4dd/pi-bme280) module, connected to a Raspberry Pi [PMOD2RPI](https://github.com/fm4dd/pmod2rpi) interface board.
+<img src="pmod-bme280.png" height="240px">
